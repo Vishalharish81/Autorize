@@ -3,8 +3,13 @@ using Autontication_learn.Interface;
 using Autontication_learn.Mailservices;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.X509;
+using System;
 using System.Security.AccessControl;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Autontication_learn.Controllers
 {
@@ -159,6 +164,61 @@ namespace Autontication_learn.Controllers
             string c = login.abstractc(x, y);
             return Ok(c);
         }
+        [HttpGet]
+        [Route("MedianArray")]
+
+        public IActionResult MedianArray(LoginInputModel LoginInputModel)
+        {
+            int[] nums1 = [2, 2, 4, 4];
+            int[] nums2 = [2, 2, 2, 4, 4];
+            int[] nums3 = nums1.Concat(nums2).OrderBy(x=>x).ToArray();
+            int n = nums3.Length;
+
+            // If odd length
+            if (n % 2 != 0)
+            {
+
+                double f1 = n / 2;
+                return Ok(nums3[n / 2]);
+            }
+            // If even length
+            else
+            {
+                return Ok((nums3[(n / 2) - 1] + nums3[n / 2]) / 2.0);
+            }
+        }
+        [HttpGet]
+        [Route("LinkedList")]
+
+        public IActionResult LinkedList(LoginInputModel LoginInputModel)
+        {
+            int[] val = [3, 2, 0, -4];
+            Node head = null;
+            Node current  = null;
+
+            foreach (var item in val)
+            {
+                if(head == null)
+                {
+                    head = new Node(item);
+                    current = head;
+                }
+                else
+                {
+                    current.Next = new Node(item);
+                    current = current.Next;
+                }
+            }
+
+
+            return Ok(current);
+        }
+        public Node Insert(Node node , int data)
+        {
+            Node newnode = new Node(data);
+            newnode.Next = node;
+            return newnode;   // new head
+        }
 
         [HttpGet]
         [Route("structkey")]
@@ -179,5 +239,280 @@ namespace Autontication_learn.Controllers
             var resut = login.ApplyDiscount(100);
             return Ok(resut);
         }
+        [HttpGet]
+        [Route("insertposition")]
+
+        public IActionResult insertposition()
+        {
+            int[] nums = [1, 3, 5, 6];
+            int target = 7;
+            int result = 0;
+            for(int i=0; i < nums.Length;i++)
+            {
+                if (nums[i] < target)
+                {
+                    result++;
+                }
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route("plusdigit")]
+
+        public IActionResult plusdigit()
+        {
+
+            int[] digits = [9, 8, 9, 9];
+            for (int i = digits.Length - 1; i >= 0; i--)
+            {
+                if (digits[i] < 9)
+                {
+                    digits[i]++;
+                    return Ok(digits);
+                }
+
+                digits[i] = 0;
+            }
+
+            int[] result = new int[digits.Length + 1];
+            result[0] = 1;
+            return Ok(result);
+
+            
+            
+        }
+        [HttpGet]
+        [Route("LongestSubstring")]
+
+        public IActionResult LongestSubstring()
+        {
+
+            string s = "pwwkew";
+            int removeduplicate = s.Distinct().Count();
+
+            return Ok(removeduplicate);
+
+
+        }
+
+
+        [HttpGet]
+        [Route("lastword")]
+
+        public IActionResult lastword()
+        {
+             int result = 0;
+            string s = "   fly me   to   the moon  ";
+             s.Trim(); 
+            string result1 = s.Trim();
+            char[] chararray = result1.ToCharArray();
+             Array.Reverse(chararray);
+             string  newarray = new string (chararray);
+
+            string[] newsplit = newarray.Split(" ");
+
+            return Ok(newsplit[0].Length);
+        }
+        [HttpGet]
+        [Route("findindex")]
+
+        public IActionResult findindex()
+        { 
+           string  haystack = "hello";
+            string needle = "ll";
+            int returns = haystack.IndexOf("leetc");
+            return Ok(haystack.IndexOf(needle));
+        }
+            [HttpGet]
+        [Route("DSA")]
+
+        public IActionResult structure()
+        {
+            // var TwoSum1 =  TwoSum([1, 6, 2, 8], 10);
+
+            //bool ischeck = IsPalindrome(121);
+            // int r = RomanToInt("MCMXCIV");
+            //bool Parentheses = Parenthesesss("()");
+            //string result = inputval(["flower", "flow", "flight"]);
+          // int res=  removeduplicate([0, 0, 1, 1, 1, 2, 2, 3, 3, 4]);
+
+            int res = removeduplicatenew([0, 1, 2, 2, 3, 0, 4, 2], 2);
+
+            return Ok(res);
+        }
+       public int  removeduplicate(int[] nums)
+        {
+            int[] removedduplicate = nums.Distinct().ToArray();
+
+            int index = 1;
+            for(int i =1; i < nums.Length; i++)
+            {
+                if (nums[i] > nums[i-1])
+                {
+                    nums[index] = nums[i];
+                    index++;
+                }
+            }
+            
+
+         
+            return removedduplicate.Length;
+        }
+        public int removeduplicatenew(int[] nums,int val)
+        {
+            int[] removedduplicate = nums.Distinct().ToArray();
+
+            int index = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] != val)
+                {
+                    nums[index] = nums[i];
+                    index++;
+                }
+            }
+
+
+
+            return index;
+        }
+
+        public bool Parenthesesss(string s)
+        {
+            Stack<char> stack = new Stack<char>();
+
+            foreach (char c in s)
+            {
+                if (c == '(' || c == '{' || c == '[')
+                {
+                    stack.Push(c);
+                }
+                else
+                {
+                    if (stack.Count == 0)
+                        return false;
+
+                    char top = stack.Peek();
+
+                    if ((c == ')' && top == '(') ||
+                        (c == '}' && top == '{') ||
+                        (c == ']' && top == '['))
+                    {
+                        stack.Pop();
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return stack.Count == 0;
+        }
+
+      
+
+
+        public string inputval(string []result)
+        {
+            string results = string.Empty;
+            if (result.Length > 0)
+            {
+                Array.Sort(result);
+                string prefix = result[0];
+                string prefix1 = result[result.Length - 1];
+
+                for (int i = 0; i < prefix.Length; i++) 
+                {
+                    if (prefix.ToCharArray()[i] == prefix1.ToCharArray()[i])
+                    {
+                        char v = prefix1.ToCharArray()[i];
+                        results =  results + v;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                   
+                }
+
+            }
+            else
+            {
+                results = "";
+            }
+            
+
+
+            return results;
+        }
+        public int RomanToInt(string s)
+        {
+            Dictionary<char, int> romanMap = new Dictionary<char, int>()
+            {
+                { 'I', 1 },
+                { 'V', 5 },
+                { 'X', 10 },
+                { 'L', 50 },
+                { 'C', 100 },
+                { 'D', 500 },
+                { 'M', 1000 }
+            };
+            int res = 0;
+            for(int i = 0;i <s.Length; i++)
+            {
+                int value = i + 1;
+                int slength = s.Length;
+                int romalvalue = romanMap[s[i]];
+                int romanlength = romanMap[s[i +1 ]];
+
+                if (value < slength && romanlength < romalvalue)
+                {
+                    res += romanMap[s[i]] - romanMap[s[i + 1]];
+                }
+                else
+                {
+                    res += romanMap[s[i]];
+                }
+                   
+                
+            }
+
+            return res;
+        }
+         public bool IsPalindrome( int x )
+        {
+           if (x < 0) return false;
+           int original = x;
+            int reverse = 0;
+
+            while (x>0)
+            {
+                int lastdigit = x % 10;
+                reverse = reverse * 10 + lastdigit ;
+                 x = x / 10;
+
+                
+            }
+
+
+            return (reverse == original);
+        }
+        public int[] TwoSum(int[] nums, int target)
+        {
+            var map = new Dictionary<int, int>();
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                int diff = target - nums[i];
+                if (map.ContainsKey(diff))
+                    return new int[] { map[diff], i };
+
+                map[nums[i]] = i;
+            }
+            return Array.Empty<int>();
+        }
+
     }
 }
